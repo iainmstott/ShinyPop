@@ -1,0 +1,12 @@
+name: matrixpopulationmodels
+title: MatrixPopulationModels
+username:
+account: iainmstott
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 242686
+bundleId: 1109023
+url: https://iainmstott.shinyapps.io/matrixpopulationmodels/
+when: 1512148628.1148
+asMultiple: FALSE
+asStatic: FALSE
