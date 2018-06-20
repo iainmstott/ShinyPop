@@ -5,6 +5,9 @@ server <- function(input, output, session) {
     ###to monitor the database, species and taxa inputs and return the
     ###correct list of species.
 
+
+### LEFT COLUMN STUFF
+
     #Update matrix selection options according to database and species inputs
     observe({
         Asp <- input$AselectedSp
@@ -42,6 +45,9 @@ server <- function(input, output, session) {
         }
     })
 
+
+### UPDATE MODEL
+
     #Update A if data input is changed or if model is updated
     A <- reactive({
         input$modelUpdate
@@ -58,28 +64,7 @@ server <- function(input, output, session) {
         }
         M
     })
-    
-    #Update the eigenstuff if the model is updated
-    eigenstuff <- reactive({
-        input$modelUpdate
-        evvs <- eigs(A())
-        evvs
-    })
-    
-    #Update the transient dynamics if the model is updated
-    transients <- reactive({
-        input$modelUpdate
-        react <- reac(A(), n0())
-        inert <- inertia(A(), n0())
-        react_upr <- reac(A(), bound = "upper")
-        react_lwr <- reac(A(), bound = "lower")
-        inert_upr <- inertia(A(), bound = "upper")
-        inert_lwr <- inertia(A(), bound = "lower")
-        td <- list(react = react, react_upr = react_upr, react_lwr = react_lwr, 
-                   inert = inert, inert_upr = inert_upr, inert_lwr = inert_lwr)
-        td
-    })
-    
+
     #Update the starting vector if input is changed or if model is updated
     n0 <- reactive({
         input$modelUpdate
@@ -95,7 +80,39 @@ server <- function(input, output, session) {
         }
         v
     })
-    
+
+        #Update the eigenstuff if the model is updated
+    eigenstuff <- reactive({
+        input$modelUpdate
+        evvs <- eigs(A())
+    })
+
+
+### 'POPULATION DYNAMICS' PANEL
+
+    #Update the transient dynamics if the model is updated
+    transients <- reactive({
+        input$modelUpdate
+        react <- reac(A(), n0())
+        inert <- inertia(A(), n0())
+        react_upr <- reac(A(), bound = "upper")
+        react_lwr <- reac(A(), bound = "lower")
+        inert_upr <- inertia(A(), bound = "upper")
+        inert_lwr <- inertia(A(), bound = "lower")
+        td <- list(react = react, 
+                   react_upr = react_upr, react_lwr = react_lwr, 
+                   inert = inert, 
+                   inert_upr = inert_upr, inert_lwr = inert_lwr
+        )
+        td
+    })
+ 
+
+### LET'S CREATE SOME OBJECTS! ###
+
+
+### 'MATRIX' PANEL
+
     #Update the taxonomic data according to change
     #of data input, database or matrix
     tdata <- reactive({
@@ -133,6 +150,7 @@ server <- function(input, output, session) {
         }
         loc
     })
+
     #Update the matrix metadata according to change
     #of data input, database or matrix
     mdata <- reactive({
@@ -152,7 +170,7 @@ server <- function(input, output, session) {
         }
         meta
     })
-    
+
     #Force a debounce on the time intervals input
     time <- reactive(input$time)
     time_d <- time %>% debounce(100)
@@ -179,6 +197,79 @@ server <- function(input, output, session) {
             output$titletext2 <- renderText("User-specified matrix")
         }
     })
+
+#   transientsN <- reactive({
+#        react <- reac(A(), n0(), return.N = TRUE)
+#        inert <- inertia(A(), n0(), return.N = TRUE, t = input$time)
+#        react_upr <- reac(A(), bound = "upper", return.N = TRUE)
+#        react_lwr <- reac(A(), bound = "lower", return.N = TRUE)
+#        inert_upr <- inertia(A(), bound = "upper", return.N = TRUE, t = input$time)
+#        inert_lwr <- inertia(A(), bound = "lower", return.N = TRUE, t = input$time)
+#        tdN <- list(react = react$N, 
+#                   react_upr = react_upr$N, react_lwr = react_lwr$N, 
+#                   inert = inert$N, 
+#                   inert_upr = inert_upr$N, inert_lwr = inert_lwr$N
+#        )
+#        tdN
+#    })
+
+
+### 'PERTURBATION ANALYSIS' PANEL
+
+    #Update the asymptotic sensitivity matrix if the model is updated
+    lambdaSTable <- reactive({
+        lamS <- sens(A())
+        lamS
+    })
+
+    #Update the asymptotic transfer function array if the model is updated
+    lambdaTFPlot <- reactive({
+        lamTF <- tfam_lambda(A())
+        lamTF
+    })
+
+    #Update the transient sensitivity matrix if the model is updated
+    inertiaSTable <- reactive({
+        inS <- tfsm_inertia(A(), n0(), tolerance = 1e-3)
+        inS
+    })
+
+    #Update the inertia transfer function array if the model is updated
+    inertiaTFPlot <- reactive({
+        inTF <- tfam_inertia(A(), n0())
+        inTF
+    })
+
+    #Update the transient sensitivity matrix (upper bound) if the model is updated
+    inertiaSuprTable <- reactive({
+        inSupr <- tfsm_inertia(A(), bound = "upper", tolerance = 1e-3)
+        inSupr
+    })
+
+    #Update the inertia transfer function (upper bound) array if the model is updated
+    inertiaTFuprPlot <- reactive({
+        inTFupr <- tfam_inertia(A(), bound = "upper")
+        inTFupr
+    })
+
+    #Update the transient sensitivity matrix (lower bound) if the model is updated
+    inertiaSlwrTable <- reactive({
+        inSlwr <- tfsm_inertia(A(), bound = "lower", tolerance = 1e-3)
+        inSlwr
+    })
+
+    #Update the inertia transfer function (lower bound) array if the model is updated
+    inertiaTFlwrPlot <- reactive({
+        inTFlwr <- tfam_inertia(A(), bound = "lower")
+        inTFlwr
+    })
+
+
+
+### LET'S RENDER THE OBJECTS FOR DISPLAY OMG! ###
+
+
+### 'MATRIX' PANEL
 
     #render a table of the taxonomic data
     output$taxadata <- renderTable({
@@ -208,7 +299,10 @@ server <- function(input, output, session) {
         dimnames(displayA) <- list(1:dim(displayA)[1], 1:dim(displayA)[2])
         displayA
     }, rownames = TRUE, colnames = TRUE, align = "c", spacing = "s", digits = 3, na = "0.000")
-    
+
+
+### 'POPULATION DYNAMICS' PANEL
+
     #render a plot of the population projection
     output$projectionPlot <- renderPlot({
         par(mar = c(5,4,2,0)+0.5)
@@ -220,7 +314,7 @@ server <- function(input, output, session) {
              bounds = input$showbounds, log = log,
              plottype = ptype, lwd = 1.5, cex.axis = 1.2)
         if(input$showstable){
-            if(!input$stdA& isolate(input$vector) != "dirichlet") stable_pr <- sum(n0()) * eigenstuff()$lambda^(0:time_d())
+            if(!input$stdA & isolate(input$vector) != "dirichlet") stable_pr <- eigenstuff()$lambda^(0:time_d())
             if(!input$stdA & isolate(input$vector) == "dirichlet") stable_pr <- eigenstuff()$lambda^(0:time_d())
             if(input$stdA & isolate(input$vector) != "dirichlet") stable_pr <- rep(sum(n0()), time_d()+1)
             if(input$stdA & isolate(input$vector) == "dirichlet") stable_pr <- rep(1, time_d()+1)
@@ -337,4 +431,38 @@ server <- function(input, output, session) {
     output$vplot <- renderUI({
         plotOutput("vplot_pre", height = vplot_height(), width = "100%")
     })
+
+
+
+
+### 'PERTURBATION ANALYSIS' PANEL
+
+    output$lambdaSTable <- renderTable({
+        displayS <- as.data.frame(lambdaSTable())
+        displayS[displayS == 0] <- NA
+        dimnames(displayS <- list(1:dim(displayS)[1], 1:dim(displayS)[2])
+        displayS
+    }, rownames = TRUE, colnames = TRUE, align = "c", spacing = "s", digits = 3, na = "0.000")
+
+    output$lambdaTFPlot <- renderPlot({
+        TFarray <- lambdaTFPlot()
+        plot(TFarray)
+    })
+
+    output$inertiaSTable <- renderTable({
+        if(input$inertiaPert == "n") displayS <- as.data.frame(inertiaSTable())
+        if(input$inertiaPert == "upr") displayS <- as.data.frame(inertiaSuprTable())
+        if(input$inertiaPert == "lwr") displayS <- as.data.frame(inertiaSlwrTable())
+        displayS[displayS == 0] <- NA
+        dimnames(displayS <- list(1:dim(displayS)[1], 1:dim(displayS)[2])
+        displayS
+    }, rownames = TRUE, colnames = TRUE, align = "c", spacing = "s", digits = 3, na = "0.000")
+
+    output$inertiaTFPlot <- renderPlot({
+        if(input$inertiaPert == "n") TFarray <- inertiaTFPlot()
+        if(input$inertiaPert == "upr") TFarray <- inertiaSuprTable()
+        if(input$inertiaPert == "lwr") TFarray <- inertiaSlwrTable()
+        plot(TFarray)
+    })
 }
+    

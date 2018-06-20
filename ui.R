@@ -415,9 +415,101 @@ ui <- fluidPage(
                               )
                        )
                    )
+                ),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # PERTURBATION ANALYSIS PANEL
+        tabPanel("PERTURBATION ANALAYSIS",
+            br(),
+            div(class = "maintitle",
+                textOutput(inline = TRUE, outputId = "titletext1")
+                ),
+            br(),
+
+        # Perturbation analysis
+            # asymptotic
+                # sensitivity
+                    fluidRow(
+                        column(12, 
+                               div(id = "lambdaStitle", class = "titleinpage",
+                                   HTML("ASYMPTOTIC SENSITIVITY")
+                               ),
+                               div(id = "lambdaSTable", class = "matrix-table", 
+                                   tableOutput(outputId = "lambdaSTable")
+                               )
+                        )
+                    ),
+                    br(),
+
+                # transfer funtion
+                    fluidRow(
+                        column(12, 
+                                div(id = "lambdaTFtitle", class = "titleinpage",
+                                    HTML("ASYMPTOTIC TRANSFER FUNCTIONS")
+                                ),
+                                plotOutput(outputId = "lambdaTFPlot")
+                        )
+                    ),
+                    br(),
+                    br(),
+
+        # transient
+            #sensitivity
+                fluidRow(
+                    column(9,
+                            div(id = "inertiaStitle", class = "titleinpage",
+                                HTML("TRANSIENT SENSITIVITY")
+                            ),
+                            div(id = "inertiaSTable", class = "matrix-table", 
+                                tableOutput(outputId = "inertiaSTable")
+                            )
+                        ),
+                    column(3,
+                        fluidRow(
+                            column(12, div(id = "inertiapertcheckboxes", class = "inputs",
+                                radioButtons(inputId = "inertiaPert", label = "Transient to evaluate:",
+                                    choices = list("Population vector" = "n",
+                                                   "Upper bound" = "upr",
+                                                   "Lower bound" = "lwr"))
+                            ))
+                        )
+                    )
+                ),
+            br(),
+            # transfer funtion
+                fluidRow(
+                    column(12, 
+                        div(id = "inertiaTFtitle", class = "titleinpage",
+                            HTML("TRANSIENT TRANSFER FUNCTIONS")
+                        ),
+                    plotOutput(outputId = "inertiaTFPlot")
+                    )
                 )
             )
-        )
+       )
     )
-)
+))
+
+
+
 
