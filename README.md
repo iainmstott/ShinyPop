@@ -1,6 +1,6 @@
-#ShinyPop  
+# ShinyPop  
 
-##Visualisations of matrix projection models using R  
+## Visualisations of matrix projection models using R  
 
 **ShinyPop** is a webapp that uses RShiny and the `R` packages 
 [`popdemo`](https://github.com/iainmstott/popdemo) and 
