@@ -8,7 +8,7 @@
 to visualise population dynamics and life history parameters using 
 matrix projection models (MPMs). MPMs may be specified by the user, 
 otherwise **ShinyPop** connects to the 
-[COMPADRE and COMADRE MPM databases](htps://www.compadre-db.org), 
+[COMPADRE and COMADRE MPM databases](https://www.compadre-db.org), 
 which provide over 9000 MPMs for more than 1000 species of plants and 
 animals.  
 
