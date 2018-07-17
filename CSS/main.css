@@ -1,0 +1,188 @@
+body {font-family:Helvetica;}
+hr {border-top: 1px solid #BFBFBF;}
+a {color: #cacaca;}
+a:hover {color: #333333}
+
+#tagline a {color: #333333; text-decoration: underline;}
+#tagline a:hover {color: #cacaca; text-decoration: none;}
+
+/*Titles*/
+.maintitle {text-transform:uppercase; font-size:22px;}
+.titleinpage {
+    background:#7F7F7F; 
+    color:#FFFFFF; 
+    font-weight:bold; 
+    font-size:16px; 
+    margin-bottom:20px; 
+    padding:0 10px 0 10px;
+}
+#taxatitle {margin-bottom:0px;} 
+#locatitle {margin-bottom:0px;} 
+#metatitle {margin-bottom:0px;}
+#popgrowthtitle {margin-bottom:0px;}
+#vectorstitle {margin-bottom:0px;}
+
+/* Text */
+.textinpage {
+    margin-left:10px; 
+    margin-right:10px; 
+    font-style:italic; 
+    font-size:12px;
+}
+.warning {
+    color: rgb(212, 0, 0)
+}
+
+/*Inputs*/
+::-moz-selection {color:white; background:#919191;}
+::selection {color:white; background: #919191;}
+.inputs {margin-left:10px; font-size:14px;}
+.selectize-input.focus {
+    border-color:#464646;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(70,70,70,0.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(70,70,70,0.6);
+}
+.form-control:focus {
+    border-color:#464646;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(70,70,70,0.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(70,70,70,0.6);
+}
+.selectize-dropdown .active {background:#cccccc !important;} 
+/* Change sidebar according to database input */
+#Aselection .selectize-input.focus {
+    border-color:#0d3059;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(13,48,89,0.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(13,48,89,0.6);
+}
+#Pselection .selectize-input.focus {
+    border-color:#14522f;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(20,82,47,0.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(20,82,47,0.6);
+}
+#Uselection .form-control:focus {
+    border-color:#e68a00;
+    -webkit-box-shadow: inset 0 1px 1px rgba(245, 175, 71, 0.075), 0 0 8px rgb(245, 175, 71);
+    box-shadow: inset 0 1px 1px rgba(245, 175, 71, 0.075), 0 0 8px rgb(245, 175, 71);
+}
+#Avector .form-control:focus {
+    border-color:#0d3059;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(13,48,89,0.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(13,48,89,0.6);
+}
+#Pvector .form-control:focus {
+    border-color:#14522f;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(20,82,47,0.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(20,82,47,0.6);
+}
+#Uvector .form-control:focus {
+    border-color:#e68a00;
+    -webkit-box-shadow: inset 0 1px 1px rgba(245, 175, 71, 0.075), 0 0 8px rgb(245, 175, 71);
+    box-shadow: inset 0 1px 1px rgba(245, 175, 71, 0.075), 0 0 8px rgb(245, 175, 71);
+}
+
+#timeintervals {margin-bottom:10px;}
+#timeintervals .form-group {display:table-row;}
+#timeintervals label {
+    font-weight:normal; 
+    display:table-cell; 
+    width:50%; 
+    height:31px; 
+    text-align:left; 
+    vertical-align:middle;
+}
+#timeintervals .form-control {
+    font-weight:bold; 
+    font-size:14px; 
+    display:table-cell; 
+    width:100%; 
+    height:31px;
+}
+
+/* Database selection */
+#database .shiny-options-group {text-align:center}
+#database .radio {
+    color:#FFFFFFFF; 
+    display:inline-block; 
+    text-align:left;
+}
+#database .radio label {width:183px;}
+#database input[value = 'animals'] + span {font-size:40px}
+#database input[value = 'animals']:after {
+    display:none;
+    width:183px;
+    height:58px;
+    border-radius: 5px;
+    background:#80809b url(imgs/comadrelogo.png) center center/175px 50px no-repeat;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    cursor:pointer;
+}
+#database input[value = 'animals']:hover:after {background-color:#0d3059;}
+#database input[value = 'animals']:checked:after {
+    display:none;
+    width:183px;
+    height:58px;
+    border-radius: 5px;
+    background:#0d3059 url(imgs/comadrelogo.png) center center/175px 50px no-repeat;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    cursor:default;
+ }
+#database input[value = 'plants'] + span {font-size:40px}
+#database input[value = 'plants']:after {
+    display:none;
+    width:183px;
+    height:58px;
+    border-radius: 5px;
+    background:#809b80 url(imgs/compadrelogo.png) center center/175px 50px no-repeat;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    cursor:pointer;
+ }
+#database input[value = 'plants']:hover:after {background-color:#14522f;}
+#database input[value = 'plants']:checked:after {
+    display:none;
+    width:183px;
+    height:58px;
+    border-radius: 5px;
+    background:#14522f url(imgs/compadrelogo.png) center center/175px 50px no-repeat;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    cursor:default;
+}
+
+/* Update */
+#updatemodelbutton {text-align:center;}
+
+/* Tables */
+.meta-table {overflow-x:auto; font-size:14px}
+.meta-table .NA {color:#E0E0E0;}
+.meta-table tr:hover {background:#D9D9D9;}
+.meta-table td:first-child {font-weight:bold; width:150px;}
+.matrix-table {overflow-x:auto; margin-left:10px; font-size:14px;}
+.matrix-table td {height:31px;}
+.matrix-table td:hover {background:#D9D9D9;}
+.matrix-table td:first-child {font-weight:bold;}
+.matrix-table .NA {color:#E0E0E0;}
+.vector-table {font-size:14px;}
+.vector-table td {height:31px; font-size:14px;}
+.vector-table td:hover {background:#D9D9D9;}
+.vector-table .NA {color:#E0E0E0;}
+#popgrowth {margin-top:15px;}
+#popvecstable {overflow-x:auto; margin-top:15px;}
+#matrixtable {margin-top:0px;}
+#numstable {margin-left:10px; margin-right:10px;}
+#numstable td:first-child {font-weight:bold;}
+
+/* Plots */
+.vector-plot {
+    width:70px; 
+    vertical-align:top; 
+    padding-top:1px; 
+    padding-right:20px;
+}
+

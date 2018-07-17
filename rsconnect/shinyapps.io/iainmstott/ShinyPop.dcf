@@ -1,0 +1,10 @@
+name: ShinyPop
+title:
+username:
+account: iainmstott
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 382556
+bundleId: 1484639
+url: https://iainmstott.shinyapps.io/ShinyPop/
+when: 1531841881.89339

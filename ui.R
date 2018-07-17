@@ -3,140 +3,30 @@ ui <- fluidPage(
     
     theme = shinytheme("cosmo"),
 
+    shinyjs::useShinyjs(),
+
 # Head
      tags$head(
-         
+              
 # favicon         
          tags$link(rel="icon", href="favicon.ico", type="image/x-icon"),
          tags$link(rel="shortcut icon", href="favicon.ico", type="image/x-icon"),
 # CSS
-         tags$style(HTML(
-"body {font-family:Helvetica;}
- hr {border-top: 1px solid #BFBFBF;}
- a {color:#e68a00;}
- a:hover {color:#004080;}
- ::-moz-selection {color:white; background:#e68a00;}
- ::selection {color:white; background:#e68a00;}
- .selectize-input.focus {
-    border-color:#e68a00;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(230,138,0,0.6);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(230,138,0,0.6);
- }
- .form-control:focus {
-    border-color:#e68a00;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(230,138,0,0.6);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(230,138,0,0.6);
- }
- .selectize-dropdown .active {background:#cccccc !important;} 
- .maintitle {text-transform:uppercase; font-size:22px;}
- .titleinpage {background:#7F7F7F; color:#FFFFFF; font-weight:bold; font-size:16px; margin-bottom:20px; padding:0 10px 0 10px;}
- .textinpage {margin-left:10px, margin-right:10px; font-style:italic; font-size:12px;}
- .meta-table {overflow-x:auto; font-size:14px}
- .meta-table .NA {color:#E0E0E0;}
- .meta-table tr:hover {background:#D9D9D9;}
- .meta-table td:first-child {font-weight:bold; width:150px;}
- .matrix-table {overflow-x:auto; margin-left:10px; font-size:14px;}
- .matrix-table td {height:31px;}
- .matrix-table td:hover {background:#D9D9D9;}
- .matrix-table td:first-child {font-weight:bold;}
- .matrix-table .NA {color:#E0E0E0;}
- .vector-table {font-size:14px;}
- .vector-table td {height:31px; font-size:14px;}
- .vector-table td:hover {background:#D9D9D9;}
- .vector-table .NA {color:#E0E0E0;}
- .vector-plot {width:70px; vertical-align:top; padding-top:1px; padding-right:20px;}
- .inputs {margin-left:10px; font-size:14px;}
- #database .shiny-options-group {text-align:center}
- #database .radio {font-color:#FFFFFFFF; display:inline-block; text-align:left;}
- #database .radio label {width:183px;}
- #database input[value = 'animals'] + span {font-size:40px}
- #database input[value = 'animals']:after {
-    display:none;
-    width:183px;
-    height:58px;
-    border-radius: 5px;
-    background:#80809b url(imgs/comadrelogo.png) center center/175px 50px no-repeat;
-    content: '';
-    display: inline-block;
-    visibility: visible;
-    cursor:pointer;
- }
- #database input[value = 'animals']:hover:after {background-color:#0d3059;}
- #database input[value = 'animals']:checked:after {
-    display:none;
-    width:183px;
-    height:58px;
-    border-radius: 5px;
-    background:#0d3059 url(imgs/comadrelogo.png) center center/175px 50px no-repeat;
-    content: '';
-    display: inline-block;
-    visibility: visible;
-    cursor:default;
- }
- #database input[value = 'plants'] + span {font-size:40px}
- #database input[value = 'plants']:after {
-    display:none;
-    width:183px;
-    height:58px;
-    border-radius: 5px;
-    background:#809b80 url(imgs/compadrelogo.png) center center/175px 50px no-repeat;
-    content: '';
-    display: inline-block;
-    visibility: visible;
-    cursor:pointer;
- }
- #database input[value = 'plants']:hover:after {background-color:#14522f;}
- #database input[value = 'plants']:checked:after {
-    display:none;
-    width:183px;
-    height:58px;
-    border-radius: 5px;
-    background:#14522f url(imgs/compadrelogo.png) center center/175px 50px no-repeat;
-    content: '';
-    display: inline-block;
-    visibility: visible;
-    cursor:default;
- }
- #Aselection .selectize-input.focus {
-    border-color:#0d3059;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(13,48,89,0.6);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(13,48,89,0.6);
- }
- #Pselection .selectize-input.focus {
-    border-color:#14522f;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(20,82,47,0.6);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075), 0 0 8px rgba(20,82,47,0.6);
- }
- #updatemodelbutton {text-align:center;}
- #taxatitle {margin-bottom:0px;} 
- #locatitle {margin-bottom:0px;} 
- #metatitle {margin-bottom:0px;}
- #popgrowthtitle {margin-bottom:0px;}
- #vectorstitle {margin-bottom:0px;}
- #popgrowth {margin-top:15px;}
- #popvecstable {overflow-x:auto; margin-top:15px;}
- #matrixtable {margin-top:0px;}
- #numstable {margin-left:10px; margin-right:10px;}
- #numstable td:first-child {font-weight:bold;}
- #timeintervals {margin-bottom:10px;}
- #timeintervals .form-group {display:table-row;}
- #timeintervals label {font-weight:normal; display:table-cell; width:50%; height:31px; text-align:left; vertical-align:middle;}
- #timeintervals .form-control {font-weight:bold; font-size:14px; display:table-cell; width:100%; height:31px;}
-"
-         ))
+         includeCSS("CSS/main.css")
     ),
     
 # Application title
-    titlePanel("Matrix Population Models"),
-    HTML("This webapp showcases matrix population modelling in R using the 
-         <a href='https://github.com/iainmstott/popdemo' target=_blank>popdemo</a> 
-         package. The app connects to the 
-         <a href = 'http://www.compadre-db.org' target=_blank>COMADRE and COMPADRE databases</a>,
-         or can be used to evaluate any user-specified matrix model.
-         <!-- Please see the 'About' tab for detailed instructions. -->
-         "),
-    p(),
-    
+    titlePanel("ShinyPop"),
+    tags$div(id = "tagline",
+        HTML("This webapp showcases <b>Matrix Population Models</b> in R using the 
+            <a href='https://github.com/iainmstott/popdemo' target=_blank>popdemo</a> 
+            package. The app connects to the 
+            <a href = 'http://www.compadre-db.org' target=_blank>COMADRE and COMPADRE databases</a>,
+            or can be used to evaluate any user-specified matrix model.
+            <!-- Please see the 'About' tab for detailed instructions. -->
+            "),
+        p()
+    ),
 # Sidebar 
     sidebarLayout(
 
@@ -215,7 +105,7 @@ ui <- fluidPage(
             ),
     
     # User input...
-            conditionalPanel(
+            conditionalPanel(id = "Uselection",
                 condition = "input.dataInput == 'userdata'",
                 textInput(inputId = "MatlabMat", label = "Enter a Matlab-style matrix here. An example with 3 stages for the spear thistle Carlina vulgaris is given.*",
                           value = "[0.5 0 2.8; 0.25 0.222 0; 0 0.667 0]")
@@ -231,9 +121,19 @@ ui <- fluidPage(
                                         "Supply your own vector..." = "uservector")),
 
         # User input...
-            conditionalPanel(
-                condition = "input.vector == 'uservector'",
-                textInput(inputId = "MatlabVec", label = "Enter a Matlab-style vector here. An example for a 3-stage model is given.",
+            conditionalPanel( id = "Avector",
+                condition = "input.dataInput == 'existingdata' && input.database == 'animals' && input.vector == 'uservector'",
+                textInput(inputId = "AMatlabVec", label = "Enter a Matlab-style vector here. An example for Gopherus agassizii is given.",
+                          value = "[0.29; 0.45; 0.07; 0.03; 0.05; 0.02; 0.02; 0.07]")
+            ),
+            conditionalPanel( id = "Pvector",
+                condition = "input.dataInput == 'existingdata' && input.database == 'plants' && input.vector == 'uservector'",
+                textInput(inputId = "PMatlabVec", label = "Enter a Matlab-style vector here. An example for Iriartea deltoidea is given.",
+                          value = "[0.025; 0.03; 0.07; 0.125; 0.25; 0.5]")
+            ),
+            conditionalPanel( id = "Uvector",
+                condition = "input.dataInput == 'userdata' && input.vector == 'uservector'",
+                textInput(inputId = "UMatlabVec", label = "Enter a Matlab-style vector here. An example for a 3-stage model is given.",
                           value = "[0.2; 0.3; 0.5]")
             ),
             hr(),
@@ -254,7 +154,7 @@ ui <- fluidPage(
                     #title
                     br(), 
                     div(align = "left", class = "maintitle",
-                        textOutput(inline = TRUE, outputId = "titletext2")
+                        textOutput(inline = TRUE, outputId = "titletext1")
                         ),
                     br(),
                     #taxonomy
@@ -305,7 +205,7 @@ ui <- fluidPage(
                 tabPanel("POPULATION DYNAMICS",
                     br(),
                     div(class = "maintitle",
-                        textOutput(inline = TRUE, outputId = "titletext1")
+                        textOutput(inline = TRUE, outputId = "titletext2")
                         ),
                     br(),
                     
@@ -442,73 +342,76 @@ ui <- fluidPage(
         tabPanel("PERTURBATION ANALAYSIS",
             br(),
             div(class = "maintitle",
-                textOutput(inline = TRUE, outputId = "titletext1")
+                textOutput(inline = TRUE, outputId = "titletext3")
                 ),
             br(),
 
         # Perturbation analysis
             # asymptotic
+                fluidRow(
+                    column(12,
+                            div(id = "inertiaStitle", class = "titleinpage",
+                                HTML("ASYMPTOTIC PERTURBATION")
+                            )
+                    )
+                ),
+
                 # sensitivity
+                HTML("<strong> Sensitivity of &lambda; </strong>"),
                     fluidRow(
-                        column(12, 
-                               div(id = "lambdaStitle", class = "titleinpage",
-                                   HTML("ASYMPTOTIC SENSITIVITY")
-                               ),
-                               div(id = "lambdaSTable", class = "matrix-table", 
-                                   tableOutput(outputId = "lambdaSTable")
-                               )
+                        div(id = "lambdaSTable", class = "matrix-table", 
+                            tableOutput(outputId = "lamSTable")
                         )
                     ),
-                    br(),
-
                 # transfer funtion
+                hr(),
+                HTML("<strong> Transfer Function of &lambda; </strong>"),
                     fluidRow(
-                        column(12, 
-                                div(id = "lambdaTFtitle", class = "titleinpage",
-                                    HTML("ASYMPTOTIC TRANSFER FUNCTIONS")
-                                ),
-                                plotOutput(outputId = "lambdaTFPlot")
-                        )
+                        plotOutput(outputId = "lamTFPlot", height = "auto")
                     ),
-                    br(),
-                    br(),
-
+                    br(), br(), br(),
         # transient
             #sensitivity
                 fluidRow(
-                    column(9,
+                    column(12,
                             div(id = "inertiaStitle", class = "titleinpage",
-                                HTML("TRANSIENT SENSITIVITY")
-                            ),
-                            div(id = "inertiaSTable", class = "matrix-table", 
-                                tableOutput(outputId = "inertiaSTable")
+                                HTML("TRANSIENT PERTURBATION")
                             )
-                        ),
-                    column(3,
-                        fluidRow(
-                            column(12, div(id = "inertiapertcheckboxes", class = "inputs",
-                                radioButtons(inputId = "inertiaPert", label = "Transient to evaluate:",
-                                    choices = list("Population vector" = "n",
-                                                   "Upper bound" = "upr",
-                                                   "Lower bound" = "lwr"))
-                            ))
-                        )
                     )
                 ),
-            br(),
-            # transfer funtion
                 fluidRow(
-                    column(12, 
-                        div(id = "inertiaTFtitle", class = "titleinpage",
-                            HTML("TRANSIENT TRANSFER FUNCTIONS")
-                        ),
-                    plotOutput(outputId = "inertiaTFPlot")
-                    )
+                    column(12, div(id = "inertiapertcheckboxes", class = "inputs",
+                        radioButtons(inputId = "inertiaPert", label = "Version of population inertia to evaluate",
+                                    inline = TRUE,
+                                    choices = list("Population vector" = "n",
+                                                "Upper bound" = "upr",
+                                                "Lower bound" = "lwr"))
+                    ))
+                ),
+                hr(),
+                strong("  Sensitivity of inertia"),
+                div(class = "warning", textOutput(outputId = "inSText", )),
+                fluidRow(
+                    column(12,
+                        div(id = "inertiaSTable", class = "matrix-table", 
+                                tableOutput(outputId = "inSTable")
+                            )
+                        )
+                ),
+                br(),
+                # transfer funtion
+                hr(),
+                strong("  Transfer Function of inertia"),
+                div(class = "warning", textOutput(outputId = "inTFText", )),
+                    fluidRow(
+                        plotOutput(outputId = "inTFPlot", height = "auto")
+                    ),
+                    br(), br(), br()
                 )
             )
        )
     )
-))
+)
 
 
 
