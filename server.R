@@ -148,7 +148,7 @@ server <- function(input, output, session) {
                 paperurl <- paste("https://doi.org/", 
                                 comadre$metadata$DOI.ISBN[as.numeric(input$AselectedMat)],
                                 sep = "")
-                paperlink <- a(papertext, href = paperurl)
+                paperlink <- a(papertext, href = paperurl, target = "_blank")
             }
             if(input$database == "plants"){
                 papertext <- paste(compadre$metadata$Authors[as.numeric(input$PselectedMat)],
@@ -161,7 +161,7 @@ server <- function(input, output, session) {
                 paperurl <- paste("https://doi.org/",
                                 compadre$metadata$DOI.ISBN[as.numeric(input$PselectedMat)],
                                 sep = "")
-                paperlink <- a(papertext, href = paperurl)
+                paperlink <- a(papertext, href = paperurl, target = "_blank")
             }
         }
         if(input$dataInput == "userdata"){
