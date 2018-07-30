@@ -110,6 +110,7 @@ ui <- fluidPage(
                 textInput(inputId = "MatlabMat", label = "Enter a Matlab-style matrix here. An example with 3 stages for the spear thistle Carlina vulgaris is given.*",
                           value = "[0.5 0 2.8; 0.25 0.222 0; 0 0.667 0]")
             ),
+            uiOutput("citation"),
             hr(),
     
     # Choose vector

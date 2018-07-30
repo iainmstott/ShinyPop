@@ -130,6 +130,46 @@ server <- function(input, output, session) {
 
 ### LET'S CREATE SOME OBJECTS! ###
 
+### SIDEBAR
+
+# link to the source article. Is reactive to choice of database and matrix,
+# i.e. updates dynamically as the user chooses their model.
+    paperlink <- reactive({
+        input$modelUpdate
+        if(input$dataInput == "existingdata"){
+            if(input$database == "animals"){
+                papertext <- paste(comadre$metadata$Authors[as.numeric(input$AselectedMat)],
+                                " (",
+                                comadre$metadata$YearPublication[as.numeric(input$AselectedMat)],
+                                ") ",
+                                comadre$metadata$Journal[as.numeric(input$AselectedMat)],
+                                sep = "")
+                papertext <- gsub(";", ",", papertext)
+                paperurl <- paste("https://doi.org/", 
+                                comadre$metadata$DOI.ISBN[as.numeric(input$AselectedMat)],
+                                sep = "")
+                paperlink <- a(papertext, href = paperurl)
+            }
+            if(input$database == "plants"){
+                papertext <- paste(compadre$metadata$Authors[as.numeric(input$PselectedMat)],
+                                " (",
+                                compadre$metadata$YearPublication[as.numeric(input$PselectedMat)],
+                                ") ",
+                                compadre$metadata$Journal[as.numeric(input$PselectedMat)],
+                                sep = "")
+                papertext <- gsub(";", ",", papertext)
+                paperurl <- paste("https://doi.org/",
+                                compadre$metadata$DOI.ISBN[as.numeric(input$PselectedMat)],
+                                sep = "")
+                paperlink <- a(papertext, href = paperurl)
+            }
+        }
+        if(input$dataInput == "userdata"){
+            paperlink <- NULL
+        }
+        paperlink
+    })
+
 
 ### 'MATRIX' PANEL
 
@@ -295,6 +335,13 @@ server <- function(input, output, session) {
 
 
 ### LET'S RENDER THE OBJECTS FOR DISPLAY OMG! ###
+
+
+### SIDEBAR
+
+    output$citation <- renderUI({
+        tagList(paperlink())
+    })
 
 
 ### 'MATRIX' PANEL
