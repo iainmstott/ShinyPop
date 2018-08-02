@@ -7,12 +7,21 @@ library(popdemo)
 
 load("data/COMPADRE_v4.0.1.RData", envir=.GlobalEnv)
 load("data/COMADRE_v2.0.1.RData", envir=.GlobalEnv)
-allPlantTaxa <- lapply( apply(compadre$metadata[,c("Phylum","Class","Order","Family","Genus","AngioGymno","DicotMonoc","OrganismType")],2,unique),
-                        function(x){ sort(x[!is.na(x)]) })
-allPlantFilter <- sort(unlist(allPlantTaxa)); names(allPlantFilter) <- allPlantFilter
-allAnimalTaxa <- lapply( apply(comadre$metadata[,c("Phylum","Class","Order","Family","GenusAccepted")],2,unique),
-                         function(x){ sort(x[!is.na(x)]) })
-allAnimalFilter <- sort(unlist(allAnimalTaxa)); names(allAnimalFilter) <- allAnimalFilter
+animalFilterData <- comadre$metadata[,c("Phylum","Class","Order","Family","GenusAccepted",
+                                        "Ecoregion", "Continent", "Country")]
+animalFilter <- lapply( apply(animalFilterData, 2, unique),
+                        function(data){ sort(data[!is.na(data)]) })
+names(animalFilter) <- c("PHYLUM","CLASS","ORDER","FAMILY","GENUS",
+                         "ECOREGION", "CONTINENT", "COUNTRY")
+
+plantFilterData <- compadre$metadata[,c("Phylum","Class","Order","Family","Genus",
+                                        "AngioGymno","DicotMonoc","OrganismType", 
+                                        "Ecoregion", "Continent", "Country")]
+plantFilter <- lapply( apply(plantFilterData, 2, unique),
+                       function(data){ sort(data[!is.na(data)]) })
+names(plantFilter) <- c("PHYLUM","CLASS","ORDER","FAMILY","GENUS",
+                        "ANGIOSPERM / GYMNOSPERM", "DICOT / MONOCOT", "LIFE FORM",
+                        "ECOREGION", "CONTINENT", "COUNTRY")
 
 allAnimalSpecies <- sort(unique(comadre$metadata$SpeciesAccepted))
 allPlantSpecies <- sort(unique(compadre$metadata$SpeciesAccepted))

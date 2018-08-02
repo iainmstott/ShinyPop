@@ -51,16 +51,18 @@ ui <- fluidPage(
             
         # Animal matrices...
     
-            #conditionalPanel(
-            #    condition = "input.dataInput == 'existingdata' && input.database == 'animals'",
-            #    checkboxInput(inputId = "Abytaxa", label = "Filter animal species list by taxa", value = FALSE)
-            #),
-            #conditionalPanel(
-            #    condition = "input.dataInput == 'existingdata' && input.database == 'animals' && input.Abytaxa === true",
-            #    selectInput(inputId = "Afilter", label = "Choose one or more taxa:",
-            #                choices = allAnimalFilter,
-            #                multiple = TRUE, selectize = TRUE)
-            #),
+            # Filters
+            conditionalPanel(
+                condition = "input.dataInput == 'existingdata' && input.database == 'animals'",
+                checkboxInput(inputId = "Abytaxa", label = "Filter by taxon / location", value = FALSE)
+            ),
+            conditionalPanel(
+                condition = "input.dataInput == 'existingdata' && input.database == 'animals' && input.Abytaxa === true",
+                selectInput(inputId = "Afilter", label = "Choose one or more taxa:",
+                            choices = animalFilter,
+                            multiple = TRUE, selectize = TRUE)
+            ),
+
             # Choose animal species
             conditionalPanel(
                 condition = "input.dataInput == 'existingdata' && input.database == 'animals'",
@@ -78,25 +80,26 @@ ui <- fluidPage(
     
         # Plant matrices...
     
-            #conditionalPanel(
-            #    condition = "input.dataInput == 'existingdata' && input.database == 'plants'",
-            #    checkboxInput(inputId = "Pbytaxa", label = "Filter plant species list by taxa", value = FALSE)
-            #),
-            #conditionalPanel(
-            #    condition = "input.dataInput == 'existingdata' && input.database == 'plants' && input.Pbytaxa === true",
-            #    selectInput(inputId = "Pfilter", label = "Choose one or more taxa:",
-            #                choices = allPlantFilter,
-            #                multiple = TRUE, selectize = TRUE)
-            #),
-            # Choose plant species
+            # Filters
+            conditionalPanel(
+                condition = "input.dataInput == 'existingdata' && input.database == 'plants'",
+                checkboxInput(inputId = "Pbytaxa", label = "Filter by taxon / life form / location", value = FALSE)
+            ),
+            conditionalPanel(
+                condition = "input.dataInput == 'existingdata' && input.database == 'plants' && input.Pbytaxa === true",
+                selectInput(inputId = "Pfilter", label = "Choose one or more taxa:",
+                            choices = plantFilter,
+                            multiple = TRUE, selectize = TRUE)
+            ),
 
+           # Choose plant species
             conditionalPanel(
                 condition = "input.dataInput == 'existingdata' && input.database == 'plants'",
                 div(id = "Pselection",
                     selectInput(inputId = "PselectedSp", label = "Choose a species (695 available):",
                                 choices = allPlantSpecies, selected = "Iriartea deltoidea",
                                 multiple = FALSE, selectize = TRUE),
-                    
+
             # Choose plant matrix
                     selectInput(inputId = "PselectedMat", label = "Choose a matrix:",
                                 choices = "5493", selected = "5493",

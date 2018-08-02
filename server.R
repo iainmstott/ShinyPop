@@ -8,7 +8,53 @@ server <- function(input, output, session) {
 
 ### LEFT COLUMN STUFF
 
-    #Update matrix selection options according to database and species inputs
+    #Update species selection options according to database and taxon inputs
+
+    #Animals
+    observe({
+        Afilt <- input$Afilter
+        if(length(Afilt > 0)){
+            AfiltRows <- as.logical( rowSums( apply(animalFilterData, 2,
+                                                function(data){ data %in% Afilt }
+                                                )))
+            AfiltSp <- sort(unlist(unique(comadre$metadata$SpeciesAccepted[AfiltRows])))
+            updateSelectInput(session, "AselectedSp",
+                              label = paste("Choose a species (", length(AfiltSp), " available):", sep = ""),
+                              choices = AfiltSp)
+        }
+        # reset if filters are removed
+        if(length(Afilt) %in% 0 | input$Abytaxa %in% FALSE){
+            updateSelectInput(session, "AselectedSp",
+                              label = paste("Choose a species (", length(allAnimalSpecies), " available):", sep = ""),
+                              choices = allAnimalSpecies, selected = input$AselectedSp
+            )
+        }
+    })
+
+    # Plants
+    observe({
+        Pfilt <- input$Pfilter
+        if(length(Pfilt > 0)){
+            PfiltRows <- as.logical( rowSums( apply(plantFilterData, 2,
+                                                function(data){ data %in% Pfilt }
+                                                )))
+            PfiltSp <- sort(unlist(unique(compadre$metadata$SpeciesAccepted[PfiltRows])))
+            updateSelectInput(session, "PselectedSp",
+                              label = paste("Choose a species (", length(PfiltSp), " available):", sep = ""),
+                              choices = PfiltSp)
+        }
+        # reset if filters are removed
+        if(length(Pfilt) %in% 0 | input$Pbytaxa %in% FALSE){
+            updateSelectInput(session, "PselectedSp",
+                              label = paste("Choose a species (", length(allPlantSpecies), " available):", sep = ""),
+                              choices = allPlantSpecies, selected = input$PselectedSp
+            )
+        }
+    })
+
+
+    # Update matrix selection options according to database and species inputs
+    # Animals
     observe({
         Asp <- input$AselectedSp
         Arows <- which(comadre$metadata$SpeciesAccepted == Asp)
@@ -27,6 +73,7 @@ server <- function(input, output, session) {
         }
     })
 
+    # Plants
     observe({
         Psp <- input$PselectedSp
         Prows <- which(compadre$metadata$SpeciesAccepted == Psp)
@@ -68,14 +115,14 @@ server <- function(input, output, session) {
     #Update the starting vector if input is changed or if model is updated
     n0 <- reactive({
         input$modelUpdate
-        if(isolate(input$vector) == "randomvector"){
+        if(isolate(input$vector) %in% "randomvector"){
             mdim <- dim(isolate(A()))[2]
             v <- t(MCMCpack::rdirichlet(1,rep(1,mdim)))
         }
-        if(isolate(input$vector) == "dirichlet"){
+        if(isolate(input$vector) %in% "dirichlet"){
             v <- "diri"
         }
-        if(isolate(input$vector) == "uservector"){
+        if(isolate(input$vector) %in% "uservector"){
             if(isolate(input$dataInput) == "existingdata" & isolate(input$database) == "animals"){
                 v <- Matlab2R(isolate(input$AMatlabVec))
             }
@@ -101,7 +148,7 @@ server <- function(input, output, session) {
     #Update the transient dynamics if the model is updated
     transients <- reactive({
         input$modelUpdate
-        if(isolate(input$vector) == "dirichlet"){
+        if(isolate(input$vector) %in% "dirichlet"){
             react_upr <- reac(A(), bound = "upper")
             react_lwr <- reac(A(), bound = "lower")
             inert_upr <- inertia(A(), bound = "upper")
@@ -416,6 +463,7 @@ server <- function(input, output, session) {
     #render text for each growth index
     output$lambda <- renderText(paste("&lambda; = <b><u>", round(eigenstuff()$lambda, 3), "</u></b>", sep = ""))
     output$react <- renderText({
+        input$modelUpdate
         if(isolate(input$vector) != "dirichlet"){
             txt <- paste("reactivity = <b><u>", round(transients()$react, 3), "</u></b>", sep = "")
         }
@@ -425,6 +473,7 @@ server <- function(input, output, session) {
         txt
         })
     output$inert <- renderText({
+        input$modelUpdate
         if(isolate(input$vector) != "dirichlet"){
             txt <- paste("inertia = <b><u>", round(transients()$inert, 3), "</u></b>", sep = "")
         }
