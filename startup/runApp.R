@@ -1,5 +1,12 @@
-###working on taxon selection with selectizeInput and updateSelectizeInput
-###Make matrix update on population selection
+### Notes...
+### Make matrix update on population selection
+
+# install packages if necessary
+install.packages(shiny)
+install.packages(shinythemes)
+install.packages(shinyjs)
+install.packages(magrittr)
+install.packages(popdemo)
 
 # Make sure the directory is correct
 setwd("C:/Dropbox/Work/Software/RShiny/ShinyPop")
