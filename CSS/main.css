@@ -19,6 +19,8 @@ a:hover {color: #333333}
 #taxatitle {margin-bottom:0px;} 
 #locatitle {margin-bottom:0px;} 
 #metatitle {margin-bottom:0px;}
+#survivaltitle {margin-bottom:0px;}
+#reproductiontitle {margin-bottom:0px;}
 #popgrowthtitle {margin-bottom:0px;}
 #vectorstitle {margin-bottom:0px;}
 
@@ -172,9 +174,16 @@ a:hover {color: #333333}
 .vector-table td {height:31px; font-size:14px;}
 .vector-table td:hover {background:#D9D9D9;}
 .vector-table .NA {color:#E0E0E0;}
+#matrixtable {margin-top:0px;}
+#diagnoses {padding-left: 15px; padding-top: 15px;}
+#survmatrixtable{overflow-x: auto; margin-top: 15px}
+#survivaltable {overflow-x:auto; margin-top:15px;}
+#survstats {padding-left: 15px; padding-top: 15px;}
+#fecstats {padding-left: 15px; padding-top: 15px;}
+#fecmatrixtable{overflow-x: auto; margin-top: 15px}
+#reproductiontable {overflow-x:auto; margin-top:15px;}
 #popgrowth {margin-top:15px;}
 #popvecstable {overflow-x:auto; margin-top:15px;}
-#matrixtable {margin-top:0px;}
 #numstable {margin-left:10px; margin-right:10px;}
 #numstable td:first-child {font-weight:bold;}
 

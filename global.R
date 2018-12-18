@@ -1,12 +1,15 @@
-#libraries
+#packages
 library(shiny)
 library(shinythemes)
 library(shinyjs)
 library(magrittr)
 library(popdemo)
+library(Rage)
+library(Rcompadre)
 
 load("data/COMPADRE_v4.0.1.RData", envir=.GlobalEnv)
 load("data/COMADRE_v2.0.1.RData", envir=.GlobalEnv)
+comadre$metadata$SpeciesAccepted <- gsub("_", " ", comadre$metadata$SpeciesAccepted)
 animalFilterData <- comadre$metadata[,c("Phylum","Class","Order","Family","GenusAccepted",
                                         "Ecoregion", "Continent", "Country")]
 animalFilter <- lapply( apply(animalFilterData, 2, unique),

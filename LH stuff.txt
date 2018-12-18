@@ -1,0 +1,27 @@
+DIV TITLES
+survtitle
+survtext
+survtable
+numstable1
+survgraph
+fectitle
+fectext
+fectable
+numstable2
+clotable
+fecgraph
+
+OBJECT IDS
+titletext3
+numstable1
+survtable
+survstageplot
+survageplot
+numstable2
+fectable
+fecstageplot
+clotable
+clostageplot
+fecageplot
+numstable -> numstable3
+

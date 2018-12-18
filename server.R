@@ -59,13 +59,13 @@ server <- function(input, output, session) {
         Asp <- input$AselectedSp
         Arows <- which(comadre$metadata$SpeciesAccepted == Asp)
         names(Arows) <- paste("Matrix", Arows)
-        if(input$AselectedSp != "Gopherus_agassizii"){
+        if(input$AselectedSp != "Gopherus agassizii"){
             updateSelectInput(session, "AselectedMat",
                               label = paste("Choose a matrix (", length(Arows), " available):", sep = ""),
                               choices = Arows
             )
         }
-        if(input$AselectedSp == "Gopherus_agassizii"){
+        if(input$AselectedSp == "Gopherus agassizii"){
             updateSelectInput(session, "AselectedMat",
                               label = paste("Choose a matrix (", length(Arows), " available):", sep = ""),
                               choices = Arows, selected = "1826"
@@ -112,6 +112,35 @@ server <- function(input, output, session) {
         M
     })
 
+    # Update U, F and C if data input is changed or model is updated
+    Asplit <- reactive({
+        input$modelUpdate
+        if(isolate(input$dataInput) == "existingdata"){
+            if(isolate(input$database) == "animals"){
+                Aspl <- comadre$mat[[as.numeric(isolate(input$AselectedMat))]][c("matU", "matF", "matC")]
+            }
+            if(isolate(input$database) == "plants"){
+                Aspl <- compadre$mat[[as.numeric(isolate(input$PselectedMat))]][c("matU", "matF", "matC")]
+            }
+        }
+        if(isolate(input$dataInput) == "userdata"){
+            matA <- isolate(A())
+            Aspl <- splitMatrix(matA)
+            names(Aspl) <- c("matU", "matF", "matC")
+        }
+        Aspl
+    })
+
+#    # Update the life table if data input is changed, or model is updated
+#    lifeTable <- reactive({
+#        input$modelUpdate
+#        Aspl <- isolate(Asplit())
+#        LT <- makeLifeTable(matU = Aspl$matU,
+#                            matF = Aspl$matF)
+#        LT <- LT[, LT$lx >= 0.05]
+#        LT
+#    })
+
     #Update the starting vector if input is changed or if model is updated
     n0 <- reactive({
         input$modelUpdate
@@ -140,6 +169,47 @@ server <- function(input, output, session) {
     eigenstuff <- reactive({
         input$modelUpdate
         evvs <- eigs(A())
+    })
+
+    # Update matrix dagnostics if model is updated
+    diagnoses <- reactive({
+        primi <- ifelse(isPrimitive(A()), "YES", "NO")
+        irred <- ifelse(isIrreducible(A()), "YES", "NO")
+        ergod <- ifelse(isErgodic(A()), "YES", "NO")
+        out <- list(primi = primi, irred = irred, ergod = ergod)
+        out
+    })
+
+
+### 'LIFE HISTORY' PANEL
+
+    # Update the survival stats if the model is updated
+    survivals <- reactive({
+        input$modelUpdate
+        kEnt <- tryCatch(kEntropy(isolate(Asplit())$matU, ), 
+                         error = function(e) {NA})
+        lExp <- tryCatch(longevity(isolate(Asplit())$matU, initPop = 10000, run = 10000)$eta, 
+                         error = function(e) {NA})
+        long <- tryCatch(longevity(isolate(Asplit())$matU, initPop = 1000, run = 10000)$Max, 
+                         error = function(e) {NA})
+        out <- list(kEnt = kEnt, lExp = lExp, long = long)
+        out
+    })
+
+    # Update the survival stats if the model is updated
+    reproductions <- reactive({
+        input$modelUpdate
+        matureP <- tryCatch(lifeTimeRepEvents(matU = isolate(Asplit())$matU, 
+                                              matF = isolate(Asplit())$matF)$p,
+                            error = function(e) {NA})
+        matureAge <- tryCatch(lifeTimeRepEvents(matU = isolate(Asplit())$matU, 
+                                                matF = isolate(Asplit())$matF)$La,
+                              error = function(e) {NA})
+        R0 <- tryCatch(R0(matU = isolate(Asplit())$matU, 
+                          matF = isolate(Asplit())$matF)$Fec,
+                       error = function(e) {NA})
+        out <- list(matureP = matureP, matureAge = matureAge, R0 = R0)
+        out
     })
 
 
@@ -292,6 +362,7 @@ server <- function(input, output, session) {
                 output$titletext1 <- renderText(paste(Sptext, Mattext, sep = " / "))
                 output$titletext2 <- renderText(paste(Sptext, Mattext, sep = " / "))
                 output$titletext3 <- renderText(paste(Sptext, Mattext, sep = " / "))
+                output$titletext4 <- renderText(paste(Sptext, Mattext, sep = " / "))
                 output$animalstyle <- renderText(
                    "<style>
                     body {color: #e6e65e6;}
@@ -303,11 +374,15 @@ server <- function(input, output, session) {
                 Mattext <- paste("matrix #", isolate(input$PselectedMat), sep = "")
                 output$titletext1 <- renderText(paste(Sptext, Mattext, sep = " / "))
                 output$titletext2 <- renderText(paste(Sptext, Mattext, sep = " / "))
+                output$titletext3 <- renderText(paste(Sptext, Mattext, sep = " / "))
+                output$titletext4 <- renderText(paste(Sptext, Mattext, sep = " / "))
             }
         }
         if(isolate(input$dataInput) == "userdata"){
             output$titletext1 <- renderText("User-specified matrix")
             output$titletext2 <- renderText("User-specified matrix")
+            output$titletext3 <- renderText("User-specified matrix")
+            output$titletext4 <- renderText("User-specified matrix")
         }
     })
 
@@ -422,12 +497,182 @@ server <- function(input, output, session) {
         displayA
     }, rownames = TRUE, colnames = TRUE, align = "c", spacing = "s", digits = 3, na = "0.000")
 
+    # render text for matrix diagnostics
+    output$primi <- renderText(paste("Primitive? <b><u>", diagnoses()$primi, "</u></b>", sep = ""))
+    output$irred <- renderText(paste("Irreducible? <b><u>", diagnoses()$irred, "</u></b>", sep = ""))
+    output$ergod <- renderText(paste("Ergodic? <b><u>", diagnoses()$ergod, "</u></b>", sep = ""))
+
+
+### 'LIFE HISTORY' PANEL
+
+    # render a table of the survival matrix
+    output$survmatrixtable <- renderTable({
+        displayU <- Asplit()$matU
+        displayU[displayU == 0] <- NA
+        dimnames(displayU) <- list(1:dim(displayU)[1], 1:dim(displayU)[2])
+        displayU
+    }, rownames = TRUE, colnames = TRUE, align = "c", spacing = "s", digits = 3, na = "0.000")
+
+    #render a table of stage numbers for survival
+    output$numstable1 <- renderTable({
+        w <- eigenstuff()$ss
+        nums <- 1:length(w)
+        stages <- as.matrix(nums)
+        dimnames(stages) <- list(1:length(w),"Stage")
+        stages
+    }, rownames = FALSE, colnames = TRUE, align = "c", spacing = "s", hover = TRUE)
+
+    #render a table of stage survival
+    output$survtable <- renderTable({
+        Usum <- colSums(Asplit()$matU)
+        Udim <- length(Usum)
+        displayUsum <- as.matrix(Usum)
+        displayUsum[displayUsum == 0] <- NA
+        dimnames(displayUsum) <- list(1:Udim, "U")
+        displayUsum
+    }, rownames = FALSE, colnames = TRUE, align = "c", spacing = "s", digits = 3, na = "0.000", hover = TRUE)
+
+    #render a barplot of survival by stage
+    output$survstageplot_pre <- renderPlot({
+        input$modelUpdate
+        Usum <- colSums(isolate(Asplit())$matU)
+        Udim <- length(Usum)
+        if(isolate(input$database == "animals")){
+            barcolor = "#0d3059"
+            bordercolor = "#80809b"
+        }
+        if(isolate(input$database == "plants")){
+            barcolor = "#14522f"
+            bordercolor = "#809b80"
+        }
+         if(isolate(input$dataInput == "userdata")){
+            barcolor = "#e68a00"
+            bordercolor = "#f5af47"
+        }
+        if(any(is.na(isolate(Asplit()$matU)))){
+            Usum <- rep(0, Udim)
+        }
+        par(mar = c(0,0,2.1,0), xpd = NA)
+        xat <- barplot(Usum[Udim:1], beside=T, horiz = T, xaxt="n", yaxs = "i", space = 0, border = bordercolor, col = barcolor)
+        par(mar = c(5,4,4,2)+0.1, xpd = F)
+    })
+    survstageplot_height <- function() {
+        input$modelUpdate
+        Usum <- colSums(isolate(Asplit())$matU)
+        Udim <- length(Usum)
+        height <- 31.1 * (Udim +1) + 2
+        height
+    }
+    output$survstageplot <- renderUI({
+        plotOutput("survstageplot_pre", height = survstageplot_height(), width = "100%")
+    })
+
+#    # render a line plot of survival over age
+#    output$survageplot <- renderPlot({
+#        LT <- lifeTable()
+#        mortality <- LT$qx
+#        par(mar = c(4, 3, 2, 1))
+#        plot(mortality, bty = "n", xlab = "", ylab = "",
+#             lty = 2, lwd = 1.5, cex.axis = 1.2, col = "darkred")
+#        mtext(side = 1, line = 2.5, cex = 1.2,
+#              "Age")
+#        mtext(side = 2, line = 2.5, cex = 1.2,
+#              "Mortality")
+#    })
+
+    # render text for survival stats
+    output$long <- renderText({
+        input$modelUpdate
+        if(any(is.na(isolate(Asplit())$matU))) stop("NAs in U matrix")
+        if(!any(is.na(isolate(Asplit())$matU))) {
+            paste("Longevity = <b><u>", round(survivals()$long, 3), "</u></b>", sep = "")
+        }
+    })
+    output$lExp <- renderText(paste("Life expectancy = <b><u>", round(survivals()$lExp, 3), "</u></b>", sep = ""))
+    output$kEnt <- renderText(paste("Keyfitz entropy = <b><u>", round(survivals()$kEnt, 3), "</u></b>", sep = ""))
+
+
+    # render a table of the reproduction matrix
+    output$fecmatrixtable <- renderTable({
+        displayF <- Asplit()$matF
+        displayF[displayF == 0] <- NA
+        dimnames(displayF) <- list(1:dim(displayF)[1], 1:dim(displayF)[2])
+        displayF
+    }, rownames = TRUE, colnames = TRUE, align = "c", spacing = "s", digits = 3, na = "0.000")
+
+    #render a table of stage numbers for reproduction
+    output$numstable2 <- renderTable({
+        w <- eigenstuff()$ss
+        nums <- 1:length(w)
+        stages <- as.matrix(nums)
+        dimnames(stages) <- list(1:length(w),"Stage")
+        stages
+    }, rownames = FALSE, colnames = TRUE, align = "c", spacing = "s", hover = TRUE)
+
+    #render a table of sexual reproduction
+    output$fectable <- renderTable({
+        input$modelUpdate
+        Fsum <- colSums(Asplit()$matF)
+        Fdim <- length(Fsum)
+        displayFsum <- as.matrix(Fsum)
+        displayFsum[displayFsum == 0] <- NA
+        dimnames(displayFsum) <- list(1:Fdim, "F")
+        displayFsum
+    }, rownames = FALSE, colnames = TRUE, align = "c", spacing = "s", digits = 3, na = "0.000", hover = TRUE)
+
+    #render a barplot of sexual reproduction by stage
+    output$fecstageplot_pre <- renderPlot({
+        input$modelUpdate
+        Fsum <- colSums(isolate(Asplit())$matF)
+        Fdim <- length(Fsum)
+        if(isolate(input$database == "animals")){
+            barcolor = "#0d3059"
+            bordercolor = "#80809b"
+        }
+        if(isolate(input$database == "plants")){
+            barcolor = "#14522f"
+            bordercolor = "#809b80"
+        }
+         if(isolate(input$dataInput == "userdata")){
+            barcolor = "#e68a00"
+            bordercolor = "#f5af47"
+        }
+        if(any(is.na(isolate(Asplit()$matF)))){
+            Fsum <- rep(0, Fdim)
+        }
+        par(mar = c(0,0,2.1,0), xpd = NA)
+        xat <- barplot(Fsum[Fdim:1], beside=T, horiz = T, xaxt="n", yaxs = "i", space = 0, border = bordercolor, col = barcolor)
+        par(mar = c(5,4,4,2)+0.1, xpd = F)
+    })
+    fecstageplot_height <- function() {
+        input$modelUpdate
+        Fsum <- colSums(isolate(Asplit())$matF)
+        Fdim <- length(Fsum)
+        height <- 31.1 * (Fdim +1) + 2
+        height
+    }
+    output$fecstageplot <- renderUI({
+        plotOutput("fecstageplot_pre", height = fecstageplot_height(), width = "100%")
+    })
+
+    # render text for reproduction stats
+    output$matureP <- renderText(paste("Probability of reaching maturity = <b><u>", round(reproductions()$matureP, 3), "</u></b>", sep = ""))
+    output$matureAge <- renderText(paste("Average age at maturity = <b><u>", round(reproductions()$matureAge, 3), "</u></b>", sep = ""))
+    output$R0 <- renderText(paste("Lifetime reproductive success = <b><u>", round(reproductions()$R0, 3), "</u></b>", sep = ""))
+
+
+
+###### clonal reproduction
+
+
+# render a line graph of reproduction over age
 
 
 ### 'POPULATION DYNAMICS' PANEL
 
     #render a plot of the population projection
     output$projectionPlot <- renderPlot({
+        input$modelUpdate
         par(mar = c(5,4,2,0)+0.5)
         pr <- project(A(), n0(), time_d(), standard.A = input$stdA)
         ifelse(input$ylog == TRUE, log <- "y", log <- "")
@@ -453,6 +698,30 @@ server <- function(input, output, session) {
             if(input$stdA & isolate(input$vector) == "dirichlet") stable_pr <- rep(1, time_d()+1)
             lines(0:time_d(), stable_pr, lwd = 1.5, lty = 2)
         }
+        if(input$showreac & isolate(input$vector) != "dirichlet"){
+            if(input$stdA) points(1, transients()$react, col = "red", pch = 3, cex = 1.5, lwd = 3)
+            if(!input$stdA) points(1, transients()$react * eigenstuff()$lambda, col = "red", pch = 3, cex = 1.5, lwd = 3)
+        }
+        if(input$showinert & isolate(input$vector) != "dirichlet"){
+            if(input$stdA) points(input$time, transients()$inert, col = "red", pch = 3, cex = 1.5, lwd = 3)
+            if(!input$stdA) points(input$time, transients()$inert * eigenstuff()$lambda^input$time, col = "red", pch = 3, cex = 1.5, lwd = 3)
+        }
+        if(input$showreacupr & input$showbounds){
+            if(input$stdA) points(1, transients()$react_upr, col = "red", pch = 3, cex = 1.5, lwd = 3)
+            if(!input$stdA) points(1, transients()$react_upr * eigenstuff()$lambda, col = "red", pch = 3, cex = 1.5, lwd = 3)
+        }
+        if(input$showinertupr & input$showbounds){
+            if(input$stdA) points(input$time, transients()$inert_upr, col = "red", pch = 3, cex = 1.5, lwd = 3)
+            if(!input$stdA) points(input$time, transients()$inert_upr * eigenstuff()$lambda^input$time, col = "red", pch = 3, cex = 1.5, lwd = 3)
+        }
+        if(input$showreaclwr & input$showbounds){
+            if(input$stdA) points(1, transients()$react_lwr, col = "red", pch = 3, cex = 1.5, lwd = 3)
+            if(!input$stdA) points(1, transients()$react_lwr * eigenstuff()$lambda, col = "red", pch = 3, cex = 1.5, lwd = 3)
+        }
+        if(input$showinertlwr & input$showbounds){
+            if(input$stdA) points(input$time, transients()$inert_lwr, col = "red", pch = 3, cex = 1.5, lwd = 3)
+            if(!input$stdA) points(input$time, transients()$inert_lwr * eigenstuff()$lambda^input$time, col = "red", pch = 3, cex = 1.5, lwd = 3)
+        }
         mtext(side = 1, line = 2.5, cex = 1.2,
               "Time Intervals")
         mtext(side = 2, line = 2.5, cex = 1.2,
@@ -462,6 +731,7 @@ server <- function(input, output, session) {
 
     #render text for each growth index
     output$lambda <- renderText(paste("&lambda; = <b><u>", round(eigenstuff()$lambda, 3), "</u></b>", sep = ""))
+
     output$react <- renderText({
         input$modelUpdate
         if(isolate(input$vector) != "dirichlet"){
@@ -483,16 +753,13 @@ server <- function(input, output, session) {
         txt
         })
 
-    output$lambda <- renderText(paste("&lambda; = <b><u>", round(eigenstuff()$lambda, 3), "</u></b>", sep = ""))
-#    output$react <- renderText(paste("reactivity = <b><u>", round(transients()$react, 3), "</u></b>", sep = ""))
-#    output$inert <- renderText(paste("inertia = <b><u>", round(transients()$inert, 3), "</u></b>", sep = ""))
     output$react_upr <- renderText(paste("reactivity (upper) = <b><u>", round(transients()$react_upr, 3), "</u></b>", sep = ""))
     output$react_lwr <- renderText(paste("reactivity (lower) = <b><u>", round(transients()$react_lwr, 3), "</u></b>", sep = ""))
     output$inert_upr <- renderText(paste("inertia (upper) = <b><u>", round(transients()$inert_upr, 3), "</u></b>", sep = ""))
     output$inert_lwr <- renderText(paste("inertia (lower) = <b><u>", round(transients()$inert_lwr, 3), "</u></b>", sep = ""))
 
-    #render a table of stage numbers
-    output$numstable <- renderTable({
+    #render a table of stage numbers for population vectors
+    output$numstable3 <- renderTable({
         w <- eigenstuff()$ss
         nums <- 1:length(w)
         stages <- as.matrix(nums)
@@ -551,7 +818,7 @@ server <- function(input, output, session) {
             dimn0 <- dim(A())[1]
             n0 <- rep(0, dimn0)
         }
-        height <- 31 * (dimn0 +1) + 2
+        height <- 31.1 * (dimn0 +1) + 2
         height
     }
     output$n0plot <- renderUI({
@@ -591,7 +858,7 @@ server <- function(input, output, session) {
     wplot_height <- function() {
         w <- eigenstuff()$ss
         wdim <- length(w)
-        height <- 31 * (wdim +1) + 2
+        height <- 31.1 * (wdim +1) + 2
         height
     }
     output$wplot <- renderUI({
@@ -631,7 +898,7 @@ server <- function(input, output, session) {
     vplot_height <- function() {
         v <- eigenstuff()$rv
         vdim <- length(v)
-        height <- 31 * (vdim +1) + 2
+        height <- 31.1 * (vdim +1) + 2
         height
     }
     output$vplot <- renderUI({
